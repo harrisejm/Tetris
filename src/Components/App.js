@@ -1,7 +1,10 @@
 import React from 'react';
-import Board from './Board'
+import Board from './Board';
+import Zpiece from './Zpiece';
 
 import '../Styles/App.css';
+
+let Z = new Zpiece();
 
 
 class App extends React.Component {
@@ -11,16 +14,18 @@ class App extends React.Component {
       board: [],
       block: [],
       numb: 0,
-      rotate: 1,
+      rotate: 0,
+      test: 1,
       startingPositionSquare: [[1,4],[1,5],[0,4],[0,5]],
       startingPositionZigOne: [[1,5],[1,6],[0,4],[0,5]],
-      startingPositionZigTwo: [[1,4],[1,5],[0,5],[0,6]]
+      startingPositionZigTwo: [[1,4],[1,5],[0,5],[0,6]],
+   //   test: new Zpiece(this.stateboard,pos,color,numb)
     }
     this.generateBoard = this.generateBoard.bind(this);
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = 1//Math.floor(Math.random() * 3)
+    const randomNum = 1//Math.floor(Math.random() * 2)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZigOne,this.state.startingPositionZigTwo];
    // const block = [this.squarePiece,this.zigzagPieceOne];
     const reset = [
@@ -45,18 +50,15 @@ class App extends React.Component {
   runGame(){
     let board = this.state.board.slice();
     let pos = this.randomPiece();
-  //  const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZigOne(pos,board,move),()=>this.nextPieceZigTwo(pos,board,move)];
+    const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZigOne(pos,board,move),()=>this.nextPieceZigTwo(pos,board,move)];
     const move = setInterval(()=> {
-
       for (let i=0; i<4; i++) {
         board[pos.p[i][0]+1][pos.p[i][1]] = Object.assign({},this.occupiedSquare(pos.c));
         board[pos.p[i][0]][pos.p[i][1]] = Object.assign({},this.nonOccupiedSquare());
         pos.p[i][0] = pos.p[i][0]+1;
         this.setState({board: board, [pos.t]: pos.p});
       }
-      //run[this.state.numb]();
-      this.nextPieceZigOne(pos,board,move);
-
+      run[this.state.numb]();
     }, 200);
   }
 ///
@@ -64,27 +66,28 @@ class App extends React.Component {
 nextPieceSquare(pos,board,move){
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true) {
     clearInterval(move);
-    this.setState({[pos.t]: pos.r});
+    this.setState({[pos.t]: pos.r,test:1});
     this.runGame();
   }
 }
 nextPieceZigOne(pos,board,move){
   let block;
-  if (this.state.rotate === 1) {
+  if (this.state.rotate === 0) {
     block = board[pos.p[2][0]+1][pos.p[2][1]].occupied;
-  } else if (this.state.rotate === 2) {
+  } else if (this.state.rotate === 1) {
     block = "true";
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || block === true) {
     clearInterval(move);
-    this.setState({[pos.t]: pos.r,rotate:1});
+    this.setState({[pos.t]: pos.r,rotate:0,test:1}); //reset rotate to 0
     this.runGame();
   }
 }
+
 nextPieceZigTwo(pos,board,move){
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || board[pos.p[3][0]+1][pos.p[3][1]].occupied === true) {
     clearInterval(move);
-    this.setState({[pos.t]: pos.r});
+    this.setState({[pos.t]: pos.r,rotate:0,test:1});
     this.runGame();
   }
 }
@@ -248,29 +251,88 @@ nextPieceZigTwo(pos,board,move){
         this.setState({board: board, [position[this.state.numb]]: pos});
       }
     }
+   const rotatePiece = [()=>this.square(board,pos,color),()=>this.rotateZig(board,pos,color,this.state.numb)];
     if (event.key === "z") {
-      // pos.sort((a,b)=>{
-      //   return b[0] - a[0];
-      // });
       console.log(pos);
-       board[pos[2][0]][pos[2][1]+2] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
-       board[pos[2][0]][pos[2][1]] = Object.assign({},this.nonOccupiedSquare());
-
-       board[pos[0][0]+1][pos[0][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
-       board[pos[0][0]][pos[0][1]] = Object.assign({},this.nonOccupiedSquare());
-
-       board[pos[3][0]+1][pos[3][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
-       board[pos[3][0]][pos[3][1]] = Object.assign({},this.nonOccupiedSquare());
-
-      pos[2][1] = pos[2][1]+2;
-      pos[3][0] = pos[3][0]+1;
-      pos[0][0] = pos[0][0]+1;
-
-     this.setState({board: board,[position[this.state.numb]]: pos,rotate:2})
-
+      rotatePiece[this.state.numb]();
+  //  this.rotateZig(board,pos,color,this.state.numb);
+     this.setState({board: board,[position[this.state.numb]]: pos,rotate:1})
     }
-    
   }
+  square(){
+
+  }
+  rotateZig(board,pos,color,numb){
+   // let Z = new Zpiece(board,pos,color,numb);
+    if (this.state.test===1){
+   //   Z.rotateOne()[0]();
+     // Z.rotateOne()[1]();
+      this.setState({test: 2, rotate: 1,board:Z.rotateOne(board,pos,color,numb)[0](),[pos]:Z.rotateOne(board,pos,color,numb)[1]()});
+    } else if (this.state.test === 2) {
+      // Z.rotateTwo()[0]();
+      // Z.rotateTwo()[1]();
+      this.setState({test:1, rotate: 0, board:Z.rotateTwo(board,pos,color,numb)[0](),[pos]:Z.rotateTwo(board,pos,color,numb)[1]()});
+    }
+  }
+
+  // rotateZigOneUpdateBoard(board,pos,color){
+  //   board[pos[2][0]][pos[2][1]+2] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[2][0]][pos[2][1]] = Object.assign({},this.nonOccupiedSquare());
+
+  //   board[pos[0][0]+1][pos[0][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[0][0]][pos[0][1]] = Object.assign({},this.nonOccupiedSquare());
+
+  //   board[pos[3][0]+1][pos[3][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[3][0]][pos[3][1]] = Object.assign({},this.nonOccupiedSquare());
+  // }
+  
+  // rotateZigOneUpdatePosition(pos){
+  //   pos[2][1] = pos[2][1]+2;
+  //   pos[3][0] = pos[3][0]+1;
+  //   pos[0][0] = pos[0][0]+1;
+  // }
+
+  // rotateZigOneUpdateBoard1(board,pos,color){
+  //   board[pos[2][0]][pos[2][1]-2] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[2][0]][pos[2][1]] = Object.assign({},this.nonOccupiedSquare());
+
+  //   board[pos[3][0]-1][pos[3][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[3][0]][pos[3][1]] = Object.assign({},this.nonOccupiedSquare());
+
+  //   board[pos[0][0]-1][pos[0][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+  //   board[pos[0][0]][pos[0][1]] = Object.assign({},this.nonOccupiedSquare());
+  // }
+  // rotateZigOneUpdatePosition1(pos){
+  //   pos[2][1] = pos[2][1]-2;
+  //   pos[3][0] = pos[3][0]-1;
+  //   pos[0][0] = pos[0][0]-1;
+  // }
+
+  // rotateZigOne(board,pos,color){
+  //   const rotate = [()=>this.rotateZigOneUpdateBoard(board,pos,color),()=>this.rotateZigOneUpdatePosition(board,pos,color)];
+  //   this.setState({rotate:1});
+  //   return rotate;
+  // }
+
+  // rotateZigOne1(board,pos,color){
+  //   const rotate = [()=>this.rotateZigOneUpdateBoard1(board,pos,color),()=>this.rotateZigOneUpdatePosition1(board,pos,color)];
+  //   this.setState({rotate:0});
+  //   return rotate;
+  // }
+  // rotateZig(board,pos,color){
+  //   if (this.state.test===1){
+  //     this.rotateZigOne(board,pos,color)[0]();
+  //     this.rotateZigOne(pos)[1]();
+  //     this.setState({test: 2});
+  //   } else if (this.state.test === 2) {
+  //     this.rotateZigOne1(board,pos,color)[0]();
+  //     this.rotateZigOne1(pos)[1]();
+  //     this.setState({test:1});
+  //   }
+  // }
+  
+
+
 
   render(){
     return (
