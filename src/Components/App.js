@@ -22,22 +22,24 @@ class App extends React.Component {
       startingPositionSquare: [[1,4],[1,5],[0,4],[0,5]],
       startingPositionZ: [[1,5],[1,6],[0,4],[0,5]],
       startingPositionS: [[1,4],[1,5],[0,5],[0,6]],
-      startingPositionI: [[0,3],[0,4],[0,5],[0,6]]
+      startingPositionI: [[0,3],[0,4],[0,5],[0,6]],
+      startingPositionT: [[1,4],[1,5],[1,6],[0,5]]
     }
     this.generateBoard = this.generateBoard.bind(this);
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
     const randomNum = Math.floor(Math.random() * 4)
-    const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI];
+    const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT];
     const reset = [
-      [[1,4],[1,5],[0,4],[0,5]],
-      [[1,5],[1,6],[0,4],[0,5]],
-      [[1,4],[1,5],[0,5],[0,6]],
-      [[0,3],[0,4],[0,5],[0,6]]
+      [[1,4],[1,5],[0,4],[0,5]], //O
+      [[1,5],[1,6],[0,4],[0,5]], //Z
+      [[1,4],[1,5],[0,5],[0,6]], //S
+      [[0,3],[0,4],[0,5],[0,6]], //I
+      [[1,4],[1,5],[1,6],[0,5]]  //T
     ];
-    const blockType = ["startingPositionSquare","startingPositionZ","startingPositionS","startingPositionI"];
-    const color = ["red","blue","orange","yellow"];
+    const blockType = ["startingPositionSquare","startingPositionZ","startingPositionS","startingPositionI","startingPositionT"];
+    const color = ["red","blue","orange","yellow","green"];
     const obj = {
       p: position[randomNum],
       r: reset[randomNum],

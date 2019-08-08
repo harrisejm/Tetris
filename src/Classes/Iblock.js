@@ -46,6 +46,10 @@ class Iblock {
   }
 
   rotatePieceTwo(board,pos,color,numb){
+
+    board[pos[3][0]][pos[3][1]+2] = Object.assign({},this.occupiedSquare(color[numb]));
+    board[pos[3][0]][pos[3][1]] = Object.assign({},this.nonOccupiedSquare());
+
     board[pos[0][0]-3][pos[0][1]-1] = Object.assign({},this.occupiedSquare(color[numb]));
     board[pos[0][0]][pos[0][1]] = Object.assign({},this.nonOccupiedSquare());
 
@@ -54,10 +58,6 @@ class Iblock {
 
     board[pos[2][0]-1][pos[2][1]+1] = Object.assign({},this.occupiedSquare(color[numb]));
     board[pos[2][0]][pos[2][1]] = Object.assign({},this.nonOccupiedSquare());
-
-    board[pos[3][0]][pos[3][1]+2] = Object.assign({},this.occupiedSquare(color[numb]));
-    board[pos[3][0]][pos[3][1]] = Object.assign({},this.nonOccupiedSquare());
-
 
     return board;
   }
@@ -84,12 +84,6 @@ class Iblock {
     const rotate = [()=>this.rotatePieceTwo(board,pos,color,numb),()=>this.rotatePositionReferenceTwo(pos)];
     return rotate;
   }
-
-
-
-
-  
-
 }
 
 export default Iblock;
