@@ -31,7 +31,7 @@ class App extends React.Component {
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = 4//Math.floor(Math.random() * 4)
+    const randomNum = 4//Math.floor(Math.random() * 5)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -298,11 +298,16 @@ nextPieceT(pos,board,move){
       }
     }
    const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateT(board,pos,color,this.state.numb)];
-    if (event.key === "z") {
+   
+   const rotatePieceReverse = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateRevereseT(board,pos,color,this.state.numb)];
+
+    if (event.key === "x") {
       console.log(pos);
       rotatePiece[this.state.numb]();
-  //  this.rotateI(board,pos,color,this.state.numb);
      this.setState({board: board,[position[this.state.numb]]: pos})
+    } else if (event.key === "z") {
+      rotatePieceReverse[this.state.numb]();
+      this.setState({board: board,[position[this.state.numb]]: pos})
     }
   }
 
@@ -343,6 +348,17 @@ nextPieceT(pos,board,move){
       this.setState({rotate: 3, board:T.rotateThree(board,pos,color,numb)[0](),[pos]:T.rotateThree(board,pos,color,numb)[1]()});
     } else if (this.state.rotate === 3) {
       this.setState({rotate: 0, board:T.rotateFour(board,pos,color,numb)[0](),[pos]:T.rotateFour(board,pos,color,numb)[1]()});
+    }
+  }
+  rotateRevereseT(board,pos,color,numb){
+    if (this.state.rotate === 0){
+      this.setState({rotate: 3,board:T.rotateReverseOne(board,pos,color,numb)[0](),[pos]:T.rotateReverseOne(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 3) {
+      this.setState({rotate: 2, board:T.rotateReverseTwo(board,pos,color,numb)[0](),[pos]:T.rotateReverseTwo(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 2) {
+      this.setState({rotate: 1, board:T.rotateReverseThree(board,pos,color,numb)[0](),[pos]:T.rotateReverseThree(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 1) {
+      this.setState({rotate: 0, board:T.rotateReverseFour(board,pos,color,numb)[0](),[pos]:T.rotateReverseFour(board,pos,color,numb)[1]()});
     }
   }
 
