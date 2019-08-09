@@ -3,12 +3,14 @@ import Board from './Board';
 import Zblock from '../Classes/Zblock';
 import Sblock from '../Classes/Sblock';
 import Iblock from '../Classes/Iblock';
+import Tblock from '../Classes/Tblock';
 
 import '../Styles/App.css';
 
 const Z = new Zblock();
 const S = new Sblock();
 const I = new Iblock();
+const T = new Tblock();
 
 
 class App extends React.Component {
@@ -29,7 +31,7 @@ class App extends React.Component {
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = Math.floor(Math.random() * 4)
+    const randomNum = 4//Math.floor(Math.random() * 4)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -54,7 +56,7 @@ class App extends React.Component {
   runGame(){
     let board = this.state.board.slice();
     let pos = this.randomPiece();
-    const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZ(pos,board,move),()=>this.nextPieceS(pos,board,move),()=>this.nextPieceI(pos,board,move)];
+    const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZ(pos,board,move),()=>this.nextPieceS(pos,board,move),()=>this.nextPieceI(pos,board,move),()=>this.nextPieceT(pos,board,move)];
     const move = setInterval(()=> {
       for (let i=0; i<4; i++) {
         board[pos.p[i][0]+1][pos.p[i][1]] = Object.assign({},this.occupiedSquare(pos.c));
@@ -124,6 +126,19 @@ nextPieceI(pos,board,move){
   }
 }
 
+nextPieceT(pos,board,move){
+  let block;
+  if (this.state.rotate === 0 && this.state.rotate === 2 && pos.p[1][0]+1 <= 19) {
+    block = board[pos.p[1][0]+1][pos.p[1][1]].occupied;
+  } else if (this.state.rotate === 1 && this.state.rotate === 3) {
+    block = "true";
+  }
+  if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[2][0]+1][pos.p[2][1]].occupied === true || block === true) {
+    clearInterval(move);
+    this.setState({[pos.t]: pos.r,rotate:0});
+    this.runGame();
+  }
+}
 
 ////
   rotateRightZigOne(position){
@@ -257,8 +272,8 @@ nextPieceI(pos,board,move){
     console.log(event.key)
     let board = this.state.board.slice();
     let pos;
-    const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice()];
-    const color = ["red","blue","orange","yellow"];
+    const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice(),this.state.startingPositionT.slice()];
+    const color = ["red","blue","orange","yellow","green"];
     pos = position[this.state.numb];
     if (event.key === "ArrowLeft") {
       pos.sort((a,b)=>{
@@ -282,7 +297,7 @@ nextPieceI(pos,board,move){
         this.setState({board: board, [position[this.state.numb]]: pos});
       }
     }
-   const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb)];
+   const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateT(board,pos,color,this.state.numb)];
     if (event.key === "z") {
       console.log(pos);
       rotatePiece[this.state.numb]();
@@ -316,6 +331,18 @@ nextPieceI(pos,board,move){
       this.setState({rotate: 1,board:I.rotateOne(board,pos,color,numb)[0](),[pos]:I.rotateOne(board,pos,color,numb)[1]()});
     } else if (this.state.rotate === 1) {
       this.setState({rotate: 0, board:I.rotateTwo(board,pos,color,numb)[0](),[pos]:I.rotateTwo(board,pos,color,numb)[1]()});
+    }
+  }
+
+  rotateT(board,pos,color,numb){
+    if (this.state.rotate === 0){
+      this.setState({rotate: 1,board:T.rotateOne(board,pos,color,numb)[0](),[pos]:T.rotateOne(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 1) {
+      this.setState({rotate: 2, board:T.rotateTwo(board,pos,color,numb)[0](),[pos]:T.rotateTwo(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 2) {
+      this.setState({rotate: 3, board:T.rotateThree(board,pos,color,numb)[0](),[pos]:T.rotateThree(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 3) {
+      this.setState({rotate: 0, board:T.rotateFour(board,pos,color,numb)[0](),[pos]:T.rotateFour(board,pos,color,numb)[1]()});
     }
   }
 
