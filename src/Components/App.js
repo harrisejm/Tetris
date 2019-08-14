@@ -5,6 +5,7 @@ import Sblock from '../Classes/Sblock';
 import Iblock from '../Classes/Iblock';
 import Tblock from '../Classes/Tblock';
 import Jblock from '../Classes/Jblock';
+import Lblock from '../Classes/Lblock';
 
 import '../Styles/App.css';
 
@@ -13,6 +14,7 @@ const S = new Sblock();
 const I = new Iblock();
 const T = new Tblock();
 const J = new Jblock();
+const L = new Lblock();
 
 class App extends React.Component {
   constructor(props) {
@@ -27,24 +29,26 @@ class App extends React.Component {
       startingPositionS: [[1,4],[1,5],[0,5],[0,6]],
       startingPositionI: [[0,3],[0,4],[0,5],[0,6]],
       startingPositionT: [[1,4],[1,5],[1,6],[0,5]],
-      startingPositionJ: [[1,4],[1,5],[1,6],[0,4]]
+      startingPositionJ: [[1,4],[1,5],[1,6],[0,4]],
+      startingPositionL: [[1,4],[1,5],[1,6],[0,6]]
     }
     this.generateBoard = this.generateBoard.bind(this);
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = 5//Math.floor(Math.random() * 6)
-    const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ];
+    const randomNum = Math.floor(Math.random() * 7)
+    const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ,this.state.startingPositionL];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
       [[1,5],[1,6],[0,4],[0,5]], //Z
       [[1,4],[1,5],[0,5],[0,6]], //S
       [[0,3],[0,4],[0,5],[0,6]], //I
       [[1,4],[1,5],[1,6],[0,5]], //T
-      [[1,4],[1,5],[1,6],[0,4]]  //J
+      [[1,4],[1,5],[1,6],[0,4]], //J
+      [[1,4],[1,5],[1,6],[0,6]]  //L
     ];
-    const blockType = ["startingPositionSquare","startingPositionZ","startingPositionS","startingPositionI","startingPositionT","startingPositionJ"];
-    const color = ["red","blue","orange","yellow","green","purple"];
+    const blockType = ["startingPositionSquare","startingPositionZ","startingPositionS","startingPositionI","startingPositionT","startingPositionJ","startingPositionL"];
+    const color = ["red","blue","orange","yellow","green","purple","aqua"];
     const obj = {
       p: position[randomNum],
       r: reset[randomNum],
@@ -59,7 +63,7 @@ class App extends React.Component {
   runGame(){
     let board = this.state.board.slice();
     let pos = this.randomPiece();
-    const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZ(pos,board,move),()=>this.nextPieceS(pos,board,move),()=>this.nextPieceI(pos,board,move),()=>this.nextPieceT(pos,board,move),()=>this.nextPieceJ(pos,board,move)];
+    const run = [()=>this.nextPieceSquare(pos,board,move),()=>this.nextPieceZ(pos,board,move),()=>this.nextPieceS(pos,board,move),()=>this.nextPieceI(pos,board,move),()=>this.nextPieceT(pos,board,move),()=>this.nextPieceJ(pos,board,move),()=>this.nextPieceL(pos,board,move)];
     const move = setInterval(()=> {
       for (let i=0; i<4; i++) {
         board[pos.p[i][0]+1][pos.p[i][1]] = Object.assign({},this.occupiedSquare(pos.c));
@@ -131,7 +135,7 @@ nextPieceI(pos,board,move){
 
 nextPieceT(pos,board,move){
   let block;
-  if (this.state.rotate === 0 && this.state.rotate === 2 && pos.p[1][0]+1 <= 19) {
+  if (pos.p[1][0]+1 <= 19 && (this.state.rotate === 0 || this.state.rotate === 2)) {
     block = board[pos.p[1][0]+1][pos.p[1][1]].occupied;
   } else if (this.state.rotate === 1 && this.state.rotate === 3) {
     block = "true";
@@ -145,12 +149,26 @@ nextPieceT(pos,board,move){
 
 nextPieceJ(pos,board,move){
   let block;
-  if (this.state.rotate === 0 && this.state.rotate === 2) {
+  if (pos.p[1][0]+1 <= 19 && (this.state.rotate === 0 || this.state.rotate === 2)) {
     block = board[pos.p[2][0]+1][pos.p[2][1]].occupied;
-  } else if (this.state.rotate === 1 && this.state.rotate === 3) {
+  } else if (this.state.rotate === 1 || this.state.rotate === 3) {
     block = "true";
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || block === true) {
+    clearInterval(move);
+    this.setState({[pos.t]: pos.r,rotate:0});
+    this.runGame();
+  }
+}
+
+nextPieceL(pos,board,move){
+  let block;
+  if (this.state.rotate === 0 || this.state.rotate === 2) {
+    block = board[pos.p[1][0]+1][pos.p[1][1]].occupied;
+  } else if (this.state.rotate === 1 || this.state.rotate === 3) {
+    block = "true";
+  }
+  if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[2][0]+1][pos.p[2][1]].occupied === true || block === true) {
     clearInterval(move);
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
@@ -289,8 +307,8 @@ nextPieceJ(pos,board,move){
     console.log(event.key)
     let board = this.state.board.slice();
     let pos;
-    const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice(),this.state.startingPositionT.slice(),this.state.startingPositionJ.slice()];
-    const color = ["red","blue","orange","yellow","green","purple"];
+    const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice(),this.state.startingPositionT.slice(),this.state.startingPositionJ.slice(),this.state.startingPositionL.slice()];
+    const color = ["red","blue","orange","yellow","green","purple","aqua"];
     pos = position[this.state.numb];
     if (event.key === "ArrowLeft") {
       pos.sort((a,b)=>{
@@ -314,9 +332,9 @@ nextPieceJ(pos,board,move){
         this.setState({board: board, [position[this.state.numb]]: pos});
       }
     }
-   const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateT(board,pos,color,this.state.numb),()=>this.rotateJ(board,pos,color,this.state.numb)];
+   const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateT(board,pos,color,this.state.numb),()=>this.rotateJ(board,pos,color,this.state.numb),()=>this.rotateL(board,pos,color,this.state.numb)];
    
-   const rotatePieceReverse = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateRevereseT(board,pos,color,this.state.numb),()=>this.rotateRevereseJ(board,pos,color,this.state.numb)];
+   const rotatePieceReverse = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateRevereseT(board,pos,color,this.state.numb),()=>this.rotateRevereseJ(board,pos,color,this.state.numb),()=>this.rotateRevereseL(board,pos,color,this.state.numb)];
 
     if (event.key === "x") {
       console.log(pos);
@@ -400,6 +418,30 @@ nextPieceJ(pos,board,move){
       this.setState({rotate: 1, board:J.rotateReverseThree(board,pos,color,numb)[0](),[pos]:J.rotateReverseThree(board,pos,color,numb)[1]()});
     } else if (this.state.rotate === 1) {
       this.setState({rotate: 0, board:J.rotateReverseFour(board,pos,color,numb)[0](),[pos]:J.rotateReverseFour(board,pos,color,numb)[1]()});
+    }
+  }
+
+  rotateL(board,pos,color,numb){
+    if (this.state.rotate === 0){
+      this.setState({rotate: 1,board:L.rotateOne(board,pos,color,numb)[0](),[pos]:L.rotateOne(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 1) {
+      this.setState({rotate: 2, board:L.rotateTwo(board,pos,color,numb)[0](),[pos]:L.rotateTwo(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 2) {
+      this.setState({rotate: 3, board:L.rotateThree(board,pos,color,numb)[0](),[pos]:L.rotateThree(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 3) {
+      this.setState({rotate: 0, board:L.rotateFour(board,pos,color,numb)[0](),[pos]:L.rotateFour(board,pos,color,numb)[1]()});
+    }
+  }
+
+  rotateRevereseL(board,pos,color,numb){
+    if (this.state.rotate === 0){
+      this.setState({rotate: 3,board:L.rotateReverseOne(board,pos,color,numb)[0](),[pos]:L.rotateReverseOne(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 3) {
+      this.setState({rotate: 2, board:L.rotateReverseTwo(board,pos,color,numb)[0](),[pos]:L.rotateReverseTwo(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 2) {
+      this.setState({rotate: 1, board:L.rotateReverseThree(board,pos,color,numb)[0](),[pos]:L.rotateReverseThree(board,pos,color,numb)[1]()});
+    } else if (this.state.rotate === 1) {
+      this.setState({rotate: 0, board:L.rotateReverseFour(board,pos,color,numb)[0](),[pos]:L.rotateReverseFour(board,pos,color,numb)[1]()});
     }
   }
 
