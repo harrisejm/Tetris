@@ -30,13 +30,15 @@ class App extends React.Component {
       startingPositionI: [[0,3],[0,4],[0,5],[0,6]],
       startingPositionT: [[1,4],[1,5],[1,6],[0,5]],
       startingPositionJ: [[1,4],[1,5],[1,6],[0,4]],
-      startingPositionL: [[1,4],[1,5],[1,6],[0,6]]
+      startingPositionL: [[1,4],[1,5],[1,6],[0,6]],
+
+      range: []
     }
     this.generateBoard = this.generateBoard.bind(this);
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = Math.floor(Math.random() * 7)
+    const randomNum = 1//Math.floor(Math.random() * 7)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ,this.state.startingPositionL];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -100,11 +102,11 @@ nextPieceZ(pos,board,move){
 nextPieceS(pos,board,move){
   let block;
   if (this.state.rotate === 0) {
-    block = board[pos.p[3][0]+1][pos.p[3][1]].occupied;
+    block = board[pos.p[2][0]+1][pos.p[2][1]].occupied;
   } else if (this.state.rotate === 1) {
     block = "true";
   }
-  if (pos.p[1][0] === 19 || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || block === true) {
+  if (pos.p[0][0] === 19 || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || block === true) {
     clearInterval(move);
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
@@ -163,7 +165,7 @@ nextPieceJ(pos,board,move){
 
 nextPieceL(pos,board,move){
   let block;
-  if (this.state.rotate === 0 || this.state.rotate === 2) {
+  if (pos.p[1][0]+1 <= 19 && (this.state.rotate === 0 || this.state.rotate === 2)) {
     block = board[pos.p[1][0]+1][pos.p[1][1]].occupied;
   } else if (this.state.rotate === 1 || this.state.rotate === 3) {
     block = "true";
@@ -302,10 +304,17 @@ nextPieceL(pos,board,move){
     }
     return arr;
   }
+  cloneBoard(board){
+    let arr = [];
+    for (let i=0; i<board.length; i++) {
+      arr.push(board[i].slice());
+    }
+    return arr;
+  }
 
   keyboard(event){
     console.log(event.key)
-    let board = this.state.board.slice();
+    let board = this.state.board.slice(); //this.cloneBoard(this.state.board)
     let pos;
     const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice(),this.state.startingPositionT.slice(),this.state.startingPositionJ.slice(),this.state.startingPositionL.slice()];
     const color = ["red","blue","orange","yellow","green","purple","aqua"];
@@ -332,19 +341,26 @@ nextPieceL(pos,board,move){
         this.setState({board: board, [position[this.state.numb]]: pos});
       }
     }
-   const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateT(board,pos,color,this.state.numb),()=>this.rotateJ(board,pos,color,this.state.numb),()=>this.rotateL(board,pos,color,this.state.numb)];
-   
-   const rotatePieceReverse = [()=>this.square(),()=>this.rotateZig(board,pos,color,this.state.numb),()=>this.rotateS(board,pos,color,this.state.numb),()=>this.rotateI(board,pos,color,this.state.numb),()=>this.rotateRevereseT(board,pos,color,this.state.numb),()=>this.rotateRevereseJ(board,pos,color,this.state.numb),()=>this.rotateRevereseL(board,pos,color,this.state.numb)];
 
     if (event.key === "x") {
       console.log(pos);
-      rotatePiece[this.state.numb]();
-     this.setState({board: board,[position[this.state.numb]]: pos})
+      this.rotate(board,pos,color,this.state.numb)[this.state.numb]();
+      this.setState({board: board,[position[this.state.numb]]: pos})
     } else if (event.key === "z") {
-      rotatePieceReverse[this.state.numb]();
+      this.rotateReverese(board,pos,color,this.state.numb)[this.state.numb]();
       this.setState({board: board,[position[this.state.numb]]: pos})
     }
   }
+
+  rotate(board,pos,color,numb){
+    const rotatePiece = [()=>this.square(),()=>this.rotateZig(board,pos,color,numb),()=>this.rotateS(board,pos,color,numb),()=>this.rotateI(board,pos,color,numb),()=>this.rotateT(board,pos,color,numb),()=>this.rotateJ(board,pos,color,numb),()=>this.rotateL(board,pos,color,numb)];
+    return rotatePiece;
+  }
+  rotateReverese(board,pos,color,numb){
+    const rotatePieceReverse = [()=>this.square(),()=>this.rotateZig(board,pos,color,numb),()=>this.rotateS(board,pos,color,numb),()=>this.rotateI(board,pos,color,numb),()=>this.rotateRevereseT(board,pos,color,numb),()=>this.rotateRevereseJ(board,pos,color,numb),()=>this.rotateRevereseL(board,pos,color,numb)];
+    return rotatePieceReverse;
+  }
+
 
   square(){
     return null;
@@ -445,10 +461,58 @@ nextPieceL(pos,board,move){
     }
   }
 
+  shiftRow(startRange,stopRange){
+    
+    let board = this.state.board.slice();
+    for (let i=startRange; i < stopRange; i++) {
+      for (let j=0; j < board[i].length; j++) {
+        if (board[i][j].occupied) {
+          board[i-1][j] = this.occupiedSquare(board[i][j].color);
+          board[i][j] = this.nonOccupiedSquare();
+        }
+      }
+    }
+  }
+  
+  removeRow(startRange,stopRange){
+
+    let board = this.state.board.slice();
+    for (let i=startRange; i < stopRange; i++) {
+      for (let j=0; j < board[i].length; j++) {
+        if (board[i][j].occupied) {
+          board[i][j] = this.nonOccupiedSquare();
+        }
+      }
+    }
+  }
+
+  checkRow(startRange, stopRange) {
+    let board = this.state.board.slice();
+    let rows = [];
+    for (let i=startRange; i < stopRange; i++) {
+      for (let j=0; j < board[i].length; j++) {
+        if (!board[i][j].occupied) {
+          break;
+        }
+        if (j === board[i].length-1) {
+          rows.push(i);
+        }
+      }
+    }
+    console.log(rows);
+    //return rows;
+  }
+
+ 
+
+
   render(){
     return (
       <div>
         <p onClick={()=>{this.runGame()}}>Click ME</p>
+        <p onClick={()=>{this.shiftRow(18,20)}}>move Up</p>
+        <p onClick={()=>{this.removeRow(14,17)}}>Delete Row</p>
+        <p onClick={()=>{this.checkRow(18,20)}}>Check Row</p>
         <Board 
           generateBoard={this.generateBoard}
           board={this.state.board}
