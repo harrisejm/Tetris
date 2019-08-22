@@ -22,3 +22,9 @@ td {
 *:focus {
   outline: none;
 }
+
+div.controls {
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}

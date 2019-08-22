@@ -31,14 +31,12 @@ class App extends React.Component {
       startingPositionT: [[1,4],[1,5],[1,6],[0,5]],
       startingPositionJ: [[1,4],[1,5],[1,6],[0,4]],
       startingPositionL: [[1,4],[1,5],[1,6],[0,6]],
-
-      range: []
     }
     this.generateBoard = this.generateBoard.bind(this);
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = 1//Math.floor(Math.random() * 7)
+    const randomNum = Math.floor(Math.random() * 7)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ,this.state.startingPositionL];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -81,6 +79,14 @@ class App extends React.Component {
 nextPieceSquare(pos,board,move){
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    console.log(rows);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r});
     this.runGame();
   }
@@ -94,6 +100,14 @@ nextPieceZ(pos,board,move){
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || block === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
+    console.log(rows);
     this.setState({[pos.t]: pos.r,rotate:0}); //reset rotate to 0
     this.runGame();
   }
@@ -102,12 +116,19 @@ nextPieceZ(pos,board,move){
 nextPieceS(pos,board,move){
   let block;
   if (this.state.rotate === 0) {
-    block = board[pos.p[2][0]+1][pos.p[2][1]].occupied;
+    block = board[pos.p[3][0]+1][pos.p[3][1]].occupied;
   } else if (this.state.rotate === 1) {
     block = "true";
   }
   if (pos.p[0][0] === 19 || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || block === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
   }
@@ -130,6 +151,13 @@ nextPieceI(pos,board,move){
 
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || blockOne === true || blockTwo === true || blockThree === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
   }
@@ -144,6 +172,13 @@ nextPieceT(pos,board,move){
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[2][0]+1][pos.p[2][1]].occupied === true || block === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
   }
@@ -158,6 +193,13 @@ nextPieceJ(pos,board,move){
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true || block === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
   }
@@ -172,6 +214,13 @@ nextPieceL(pos,board,move){
   }
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[2][0]+1][pos.p[2][1]].occupied === true || block === true) {
     clearInterval(move);
+    let rows = this.checkRow(pos.p[3][0],pos.p[0][0]+1,board);
+    if (rows.length > 0) {
+      setTimeout(()=>{
+        this.removeRow(rows[0],rows[rows.length-1]+1,board);
+        this.shiftRow(rows[0],0,board,rows.length);
+      }, 100)
+    }
     this.setState({[pos.t]: pos.r,rotate:0});
     this.runGame();
   }
@@ -461,22 +510,18 @@ nextPieceL(pos,board,move){
     }
   }
 
-  shiftRow(startRange,stopRange){
-    
-    let board = this.state.board.slice();
-    for (let i=startRange; i < stopRange; i++) {
+  shiftRow(startRange,stopRange,board,rows){
+    for (let i=startRange; i > stopRange; i--) {
       for (let j=0; j < board[i].length; j++) {
         if (board[i][j].occupied) {
-          board[i-1][j] = this.occupiedSquare(board[i][j].color);
+          board[i+rows][j] = this.occupiedSquare(board[i][j].color);
           board[i][j] = this.nonOccupiedSquare();
         }
       }
     }
   }
   
-  removeRow(startRange,stopRange){
-
-    let board = this.state.board.slice();
+  removeRow(startRange,stopRange,board){
     for (let i=startRange; i < stopRange; i++) {
       for (let j=0; j < board[i].length; j++) {
         if (board[i][j].occupied) {
@@ -486,8 +531,7 @@ nextPieceL(pos,board,move){
     }
   }
 
-  checkRow(startRange, stopRange) {
-    let board = this.state.board.slice();
+  checkRow(startRange,stopRange,board) {
     let rows = [];
     for (let i=startRange; i < stopRange; i++) {
       for (let j=0; j < board[i].length; j++) {
@@ -499,8 +543,7 @@ nextPieceL(pos,board,move){
         }
       }
     }
-    console.log(rows);
-    //return rows;
+    return rows;
   }
 
  
@@ -510,9 +553,13 @@ nextPieceL(pos,board,move){
     return (
       <div>
         <p onClick={()=>{this.runGame()}}>Click ME</p>
-        <p onClick={()=>{this.shiftRow(18,20)}}>move Up</p>
+
+{/*         
+        <p onClick={()=>{this.shiftRow(16,18)}}>move Up</p>
+
+
         <p onClick={()=>{this.removeRow(14,17)}}>Delete Row</p>
-        <p onClick={()=>{this.checkRow(18,20)}}>Check Row</p>
+        <p onClick={()=>{this.checkRow(18,20)}}>Check Row</p> */}
         <Board 
           generateBoard={this.generateBoard}
           board={this.state.board}
