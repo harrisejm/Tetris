@@ -24,6 +24,8 @@ class App extends React.Component {
       block: [],
       numb: 0,
       rotate: 0,
+      blockCount: 0,
+      timer: 0,
       startingPositionSquare: [[1,4],[1,5],[0,4],[0,5]],
       startingPositionZ: [[1,5],[1,6],[0,4],[0,5]],
       startingPositionS: [[1,4],[1,5],[0,5],[0,6]],
@@ -36,7 +38,7 @@ class App extends React.Component {
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = Math.floor(Math.random() * 7)
+    const randomNum = 0//Math.floor(Math.random() * 7)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ,this.state.startingPositionL];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -60,6 +62,10 @@ class App extends React.Component {
     return obj;
   }
 
+  increaseSpeed(){
+    
+  }
+
   runGame(){
     let board = this.state.board.slice();
     let pos = this.randomPiece();
@@ -71,11 +77,21 @@ class App extends React.Component {
         pos.p[i][0] = pos.p[i][0]+1;
         this.setState({board: board, [pos.t]: pos.p});
       }
+      setTimeout(()=>{
       run[this.state.numb]();
-    }, 200);
+      },100);
+    }, 500-this.state.timer);
   }
 ///
-
+addTime(){
+  let time = this.state.timer;
+  if (this.state.blockCount%1===0 && this.state.timer <= 200) {
+    time += 100;
+  } else if (this.state.timer === 300)  {
+    time = 0;
+  }
+  return time;
+}
 nextPieceSquare(pos,board,move){
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true) {
     clearInterval(move);
@@ -87,7 +103,9 @@ nextPieceSquare(pos,board,move){
         this.shiftRow(rows[0],0,board,rows.length);
       }, 100)
     }
-    this.setState({[pos.t]: pos.r});
+
+    this.setState({[pos.t]: pos.r, blockCount:this.state.blockCount+1,timer: this.state.timer+this.addTime()});
+    console.log(this.state.blockCount);
     this.runGame();
   }
 }
