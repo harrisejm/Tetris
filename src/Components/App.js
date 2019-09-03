@@ -38,7 +38,7 @@ class App extends React.Component {
     this.keyboard = this.keyboard.bind(this);
   }
   randomPiece(){
-    const randomNum = 0//Math.floor(Math.random() * 7)
+    const randomNum = 1//Math.floor(Math.random() * 7)
     const position = [this.state.startingPositionSquare,this.state.startingPositionZ,this.state.startingPositionS,this.state.startingPositionI,this.state.startingPositionT,this.state.startingPositionJ,this.state.startingPositionL];
     const reset = [
       [[1,4],[1,5],[0,4],[0,5]], //O
@@ -80,17 +80,17 @@ class App extends React.Component {
       setTimeout(()=>{
       run[this.state.numb]();
       },100);
-    }, 500-this.state.timer);
+    }, 200);//500-this.state.timer);
   }
 ///
 addTime(){
-  let time = this.state.timer;
-  if (this.state.blockCount%1===0 && this.state.timer <= 200) {
-    time += 100;
-  } else if (this.state.timer === 300)  {
-    time = 0;
-  }
-  return time;
+  // let time = this.state.timer;
+  // if (this.state.blockCount%1===0 && this.state.timer <= 200) {
+  //   time += 100;
+  // } else if (this.state.timer === 300)  {
+  //   time = 0;
+  // }
+  // return time;
 }
 nextPieceSquare(pos,board,move){
   if (pos.p[0][0] === 19 || board[pos.p[0][0]+1][pos.p[0][1]].occupied === true || board[pos.p[1][0]+1][pos.p[1][1]].occupied === true) {
@@ -386,7 +386,7 @@ nextPieceL(pos,board,move){
     const position = [this.state.startingPositionSquare.slice(),this.state.startingPositionZ.slice(),this.state.startingPositionS.slice(),this.state.startingPositionI.slice(),this.state.startingPositionT.slice(),this.state.startingPositionJ.slice(),this.state.startingPositionL.slice()];
     const color = ["red","blue","orange","yellow","green","purple","aqua"];
     pos = position[this.state.numb];
-    if (event.key === "ArrowLeft") {
+    if (event.key === "ArrowLeft" && ((this.state.rotate === 0 && pos[2][1]-1 >= 0) || (this.state.rotate === 1 && pos[0][1]-1 >= 0))) {
       pos.sort((a,b)=>{
         return a[1] - b[1];
       });
@@ -416,6 +416,17 @@ nextPieceL(pos,board,move){
     } else if (event.key === "z") {
       this.rotateReverese(board,pos,color,this.state.numb)[this.state.numb]();
       this.setState({board: board,[position[this.state.numb]]: pos})
+    }
+
+    if (event.key === 'ArrowDown') {
+      if (pos[0][0] < 19 && pos[0][0] >1 && board[pos[0][0]+1][pos[0][1]] ) {      
+      for (let i=0; i<4; i++) {
+        board[pos[i][0]+1][pos[i][1]] = Object.assign({},this.occupiedSquare(color[this.state.numb]));
+        board[pos[i][0]][pos[i][1]] = Object.assign({},this.nonOccupiedSquare());
+        pos[i][0] +=1;
+        this.setState({board: board, [position[this.state.numb]]: pos});
+      }
+    }
     }
   }
 
