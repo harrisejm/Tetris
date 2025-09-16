@@ -1,5 +1,5 @@
 class Iblock {
-
+ // Test
   occupiedSquare(color){
     const square = {
       occupied: true,
